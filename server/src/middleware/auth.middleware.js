@@ -2,6 +2,14 @@ import jwt from 'jsonwebtoken';
 import {config} from 'dotenv';
 config();
 
+
+/**
+ * Protection route
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ * @returns 
+ */
 export const authProtect = async (req, res, next) => {
     try {
         const token = req.cookies.token || req.headers.authorization.replace('Bearer ',"");

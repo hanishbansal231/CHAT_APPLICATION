@@ -1,10 +1,16 @@
 import ApiError from '../helper/apiError.js';
 import ApiResponse from '../helper/apiResponse.js';
 import { asyncHandler } from '../helper/asyncHandler.js';
+import { fileDestroy, fileUploader } from '../helper/cloudinary.js';
 import { Otp } from '../model/otp.js';
 import { User } from '../model/user.modal.js'
 import otpGenerator from 'otp-generator';
 
+
+/**
+ * @param SEND OTP
+ * OTP VERIFICATION FUNCTION
+ */
 const sendOtp = asyncHandler(async (req, res, next) => {
     const { email, username } = req.body;
 
@@ -41,6 +47,11 @@ const sendOtp = asyncHandler(async (req, res, next) => {
 
 })
 
+
+/**
+ * @param SIGNUP
+ * SIGNUP FUNCTION
+ */
 const signup = asyncHandler(async (req, res, next) => {
     try {
         const { name, email, username, password, otp } = req.body;
@@ -90,6 +101,11 @@ const signup = asyncHandler(async (req, res, next) => {
     }
 });
 
+
+/**
+ * @param LOGIN
+ * LOGIN FUNCTION
+ */
 const login = asyncHandler(async (req, res, next) => {
     try {
 
@@ -120,7 +136,10 @@ const login = asyncHandler(async (req, res, next) => {
     }
 });
 
-
+/**
+ * @param logout
+ * LOGOUT FUNCTION
+ */
 const logout = asyncHandler(async (req, res) => {
     try {
 
@@ -137,6 +156,10 @@ const logout = asyncHandler(async (req, res) => {
     }
 });
 
+/**
+ * @param changePassword
+ * CHANGE PASSWORD FUNCTION
+ */
 const changePassword = asyncHandler(async (req, res, next) => {
     try {
         const { newPassword, oldPassword } = req.body;
@@ -159,7 +182,7 @@ const changePassword = asyncHandler(async (req, res, next) => {
         findUser.password = newPassword;
 
         await findUser.save();
-        
+
         return res.status(200).json(
             new ApiResponse(200, findUser, 'Change Password Successfully...')
         )
@@ -170,13 +193,114 @@ const changePassword = asyncHandler(async (req, res, next) => {
     }
 })
 
+/**
+ * @param followUnFollow
+ * FOLLOW AND UNFOLLOW FUNCTION
+ * 
+ */
 const followUnFollow = asyncHandler(async (req, res, next) => {
     try {
         const { id } = req.params;
         const user = req.user;
-        const userUpdate = await User.findById(id);
 
-        if (!userUpdate) return next(new ApiError(402, "User is not find please signup.."));
+        const updateUser = await User.findById(id);
+        const currentUser = await User.findById(user._id);
+
+        if (id === user._id) return next(new ApiError(403, 'You cannot follow/unfollow yourself...'));
+
+        if (!updateUser || !currentUser) return next(new ApiError(402, "User is not find..."));
+
+        const isFollowing = currentUser.following.includes(id);
+
+        if (isFollowing) {
+            await User.findByIdAndUpdate(user._id, { $pull: { following: id } });
+            await User.findByIdAndUpdate(id, { $pull: { followers: id } });
+        } else {
+            await User.findByIdAndUpdate(user._id, { $push: { following: id } });
+            await User.findByIdAndUpdate(id, { $push: { followers: id } });
+        }
+
+        return res.status(200).json(
+            new ApiResponse(200, currentUser, 'Change Password Successfully...')
+        )
+
+    } catch (error) {
+        console.log(error.message)
+        return next(new ApiError(402, "Internal Error", error));
+    }
+});
+
+
+/**
+ * @param updateUser
+ * UPDATE USER FUNCTION
+ * 
+ */
+const updateUser = asyncHandler(async (req, res, next) => {
+    try {
+        const { name, email, username, bio } = req.body;
+        const profilePicture = req.file?.path;
+        const userId = req.user._id;
+
+        const user = await User.findById({ _id: userId });
+
+        if (!user) return next(new ApiError(402, "User is not find..."));
+
+        if (profilePicture) {
+
+            if (user.profile_picture.publicId) {
+                await fileDestroy(user.profile_picture.publicId)
+                user.profile_picture.publicId = '';
+                user.profile_picture.url = '';
+            }
+
+            const file = await fileUploader(profilePicture);
+            if (file) {
+                user.profile_picture.publicId = file.public_id;
+                user.profile_picture.url = file.secure_url;
+            }
+        }
+
+        user.name = name || user.name;
+        user.email = email || user.email;
+        user.username = username || user.username;
+        user.bio = bio || user.bio;
+
+
+        await user.save();
+
+        return res.status(200).json(
+            new ApiResponse(200, user, 'Change Password Successfully...')
+        )
+
+
+    } catch (error) {
+        console.log(error.message)
+        return next(new ApiError(402, "Internal Error", error));
+    }
+});
+
+
+/**
+ * @param getUserById
+ * GET USER FUNCTION
+ * 
+ */
+
+const getUserById = asyncHandler(async (req, res, next) => {
+    try {
+
+        const { id } = req.params;
+
+        if(!id) return next(new ApiError(403,'Id not found...'));
+
+        const user = await User.findById(id);
+
+        if (!user) return next(new ApiError(402, "User is not find..."));
+
+        return res.status(200).json(
+            new ApiResponse(200, user, 'Change Password Successfully...')
+        )
 
     } catch (error) {
         console.log(error.message)
@@ -190,5 +314,7 @@ export {
     login,
     logout,
     followUnFollow,
-    changePassword
+    changePassword,
+    updateUser,
+    getUserById
 }
