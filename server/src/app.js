@@ -26,12 +26,14 @@ app.use(cors({
  * Router Import files
  */
 import userRoutes from './routes/user.route.js';
+import postRoutes from './routes/post.router.js';
 import errorMiddleware from './middleware/error.middleware.js';
 
 /**
  * Routes
  */
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/post', postRoutes);
 
 
 /**

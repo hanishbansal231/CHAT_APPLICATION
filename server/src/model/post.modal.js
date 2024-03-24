@@ -10,29 +10,35 @@ const postSchema = new Schema({
         type: String,
     },
     post_image: {
-        type: String
+        url: {
+            type: String
+        },
+        publicId: {
+            type: String
+        }
     },
     likes: {
-        type: Number,
-        default: 0
+        type: [Schema.Types.ObjectId],
+        ref: "User",
+        default: [],
     },
     replies: [
         {
-           userId:{
-            type: Schema.Types.ObjectId,
-            ref: 'User',
-            required:true
-           },
-           text:{
-            type: String,
-            required:true
-           },
-           userProfilePic:{
-            type:String
-           },
-           username:{
-            type:string
-           }
+            userId: {
+                type: Schema.Types.ObjectId,
+                ref: 'User',
+                required: true
+            },
+            text: {
+                type: String,
+                required: true
+            },
+            userProfilePic: {
+                type: String
+            },
+            username: {
+                type: String
+            }
         },
     ]
 }, {
