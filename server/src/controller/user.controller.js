@@ -12,9 +12,9 @@ import otpGenerator from 'otp-generator';
  * OTP VERIFICATION FUNCTION
  */
 const sendOtp = asyncHandler(async (req, res, next) => {
-    const { email, username } = req.body;
+    const { email, username, name } = req.body;
 
-    if (!email) return next(new ApiError(402, "Email is mendatory..."));
+    if (!email || !name) return next(new ApiError(402, "Email is mendatory..."));
 
     const user = await User.findOne({
         $or: [{ email }, { username }]
@@ -38,7 +38,7 @@ const sendOtp = asyncHandler(async (req, res, next) => {
         });
     }
 
-    const otpPayload = { email, otp };
+    const otpPayload = { email, otp, name };
     const otpBody = await Otp.create(otpPayload);
 
     return res.status(200).json(
@@ -292,7 +292,7 @@ const getUserById = asyncHandler(async (req, res, next) => {
 
         const { id } = req.params;
 
-        if(!id) return next(new ApiError(403,'Id not found...'));
+        if (!id) return next(new ApiError(403, 'Id not found...'));
 
         const user = await User.findById(id);
 

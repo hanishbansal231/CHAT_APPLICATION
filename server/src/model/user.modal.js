@@ -47,7 +47,9 @@ const userSchema = new Schema({
     },
     access_token: {
         type: String,
-    }
+    },
+    forgotPasswordToken:String,
+    forgotPasswordExpiry:Date,
 }, {
     timestamps: true
 });

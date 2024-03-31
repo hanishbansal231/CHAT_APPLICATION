@@ -9,17 +9,23 @@ import UserPage from './modules/pages/UserPage.tsx';
 import VerifyAccount from './modules/pages/VerifyAccount.tsx';
 import Login from './modules/components/Login.tsx';
 import SignUp from './modules/components/SignUp.tsx';
+import ProtectRoute from './modules/components/ProtectRoute.tsx';
+import ForgotPassword from './modules/pages/ForgotPassword.tsx';
 
 const App: React.FC = () => {
+
   return (
     <Container maxW={"620px"}>
       <Header />
       <Routes>
-        <Route path={`/:${mainRoutes.UserProfile}`} element={<UserPage />} />
-        <Route path={`/:${mainRoutes.UserProfile}/${subRoutes.post}/:${subRoutes.pid}`} element={<PostPage />} />
         <Route path='/signup' element={<SignUp />} />
         <Route path='/login' element={<Login />} />
         <Route path='/verify-account' element={<VerifyAccount />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route element={<ProtectRoute />} >
+          <Route path={`/:${mainRoutes.UserProfile}`} element={<UserPage />} />
+          <Route path={`/:${mainRoutes.UserProfile}/${subRoutes.post}/:${subRoutes.pid}`} element={<PostPage />} />
+        </Route>
       </Routes>
     </Container>
   )

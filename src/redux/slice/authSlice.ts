@@ -1,10 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { SignUpInterface } from "@src/services/model";
+import { encrypt } from "../../utils/cryptoHelper";
 
 
 interface InitialState {
     token: string | null;
-    user: any[];
+    user: any;
     isLoading: boolean;
     signData: SignUpInterface
 }
@@ -28,7 +29,7 @@ const authSlice = createSlice({
         setUser: (state, action) => {
             state.user = action.payload;
             state.token = action.payload.access_token;
-            localStorage.setItem('token', action.payload.access_token);
+            localStorage.setItem('token', JSON.stringify(encrypt(action.payload.access_token)));
         },
         setIsLoading: (state, action) => {
             state.isLoading = action.payload;

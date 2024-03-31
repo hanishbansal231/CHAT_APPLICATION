@@ -112,11 +112,16 @@ const Login: React.FC = () => {
                                 Sign up
                             </Button>
                         </Stack>
+                            <Text align={"left"}>
+                                <Link href={'/forgot-password'} color={"blue.200"}>
+                                    Forgot Password
+                                </Link>
+                            </Text>
                         <Stack pt={6}>
                             <Text align={"center"}>
                                 Already a user?{" "}
                                 <Link color={"blue.400"}>
-                                    Login
+                                    SignUp
                                 </Link>
                             </Text>
                         </Stack>
