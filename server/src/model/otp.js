@@ -25,7 +25,7 @@ const otpSchema = new Schema({
 
 async function sendVerificationEmail(email, otp,name) {
     const mailResponse = await sendEmail(email, 'Send Email...', otpTemplate(otp,name));
-    console.log('MAIL RESPONSE -> ', mailResponse.response);
+    // console.log('MAIL RESPONSE -> ', mailResponse.response);
 }
 
 otpSchema.pre("save", async function (next) {

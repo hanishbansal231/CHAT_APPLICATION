@@ -20,7 +20,7 @@ const sendEmail = async (email, subject, message) => {
             html: `${message}`,
         });
 
-        console.log(info)
+        // console.log(info)
         return info;
 
     } catch (error) {

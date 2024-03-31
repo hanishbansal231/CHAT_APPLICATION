@@ -5,6 +5,10 @@ import { fileDestroy, fileUploader } from '../helper/cloudinary.js';
 import { Otp } from '../model/otp.js';
 import { User } from '../model/user.modal.js'
 import otpGenerator from 'otp-generator';
+import crypto from 'crypto';
+import { config } from 'dotenv';
+import sendEmail from '../helper/emailSender.js';
+config();
 
 
 /**
@@ -306,6 +310,77 @@ const getUserById = asyncHandler(async (req, res, next) => {
         console.log(error.message)
         return next(new ApiError(402, "Internal Error", error));
     }
+});
+
+const forgotPasswordToken = asyncHandler(async (req, res, next) => {
+    try {
+        const { email, username } = req.body;
+
+        if (!(email || username)) return next(new ApiError(403, 'All field Mendatory...'));
+
+        const user = await User.findOne({ email: email }) || await User.findOne({ username: username });
+
+        if (!user) return next(new ApiError(402, "User is not find..."));
+
+        const forgotToken = await user.generatePasswordResetToken();
+        const resetPasswordUrl = `${process.env.FRONTEND_URL}/reset-password/${forgotToken}`;
+
+        try {
+
+            await sendEmail(user.email, 'Forgot Password...', resetPasswordUrl);
+
+            await user.save();
+            return res.status(200).json(
+                new ApiResponse(200, {}, 'Forgot Password Successfully...')
+            )
+        } catch (error) {
+            user.forgotPasswordExpiry = undefined;
+            user.forgotPasswordToken = undefined;
+            console.log(error.message)
+            return next(new ApiError(402, "Internal Error", error));
+        }
+
+    } catch (error) {
+        console.log(error.message);
+        return next(new ApiError(402, "Internal Error", error));
+    }
+});
+
+const resetPassword = asyncHandler(async (req, res, next) => {
+    try {
+
+        const { forgotToken, newPassword, comfirmPassword } = req.body;
+
+        if (!forgotToken || !newPassword || !comfirmPassword) return next(new ApiError(403, 'All field Mendatory...'));
+
+        const forgotPasswordToken = crypto
+            .createHash('sha256')
+            .update(forgotToken)
+            .digest('hex');
+
+            console.log(forgotPasswordToken)
+
+        const user = await User.findOne({
+            forgotPasswordToken:forgotToken,
+            forgotPasswordExpiry: { $gt: Date.now() }
+        });
+
+        if (!user) return next(new ApiError(402, "User is not find..."));
+
+        if(newPassword !== comfirmPassword) return next(new ApiError(403, 'password not match...'));
+
+        user.password = newPassword;
+        user.forgotPasswordExpiry = undefined;
+        user.forgotPasswordToken = undefined;
+
+        return res.status(200).json(
+            new ApiResponse(200, {}, 'Forgot Password Successfully...')
+        )
+
+    } catch (error) {
+        console.log(error.message);
+        return next(new ApiError(402, "Internal Error", error));
+    }
 })
 
 export {
@@ -316,5 +391,7 @@ export {
     followUnFollow,
     changePassword,
     updateUser,
-    getUserById
+    getUserById,
+    forgotPasswordToken,
+    resetPassword
 }

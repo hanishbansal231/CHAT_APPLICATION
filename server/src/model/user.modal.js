@@ -2,6 +2,7 @@ import { Schema, model } from "mongoose";
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { config } from "dotenv";
+import crypto from 'crypto';
 config();
 
 const userSchema = new Schema({
@@ -48,8 +49,8 @@ const userSchema = new Schema({
     access_token: {
         type: String,
     },
-    forgotPasswordToken:String,
-    forgotPasswordExpiry:Date,
+    forgotPasswordToken: String,
+    forgotPasswordExpiry: Date,
 }, {
     timestamps: true
 });
@@ -72,6 +73,15 @@ userSchema.methods = {
         }, process.env.ACESS_TOKEN_SECRET, {
             expiresIn: process.env.ACESS_TOKEN_EXPIRY
         });
+    },
+    generatePasswordResetToken: async function () {
+        const resetToken = crypto.randomBytes(20).toString('hex');
+        this.forgotPasswordToken = crypto
+            .createHash('sha256')
+            .update(resetToken)
+            .digest('hex');
+        this.forgotPasswordExpiry = Date.now() + 15 * 60 * 1000;
+        return resetToken;
     }
 }
 
