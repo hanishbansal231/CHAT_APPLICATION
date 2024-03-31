@@ -5,7 +5,7 @@ import Actions from '../components/Actions'
 import Comment from '../components/Comment'
 
 const PostPage: React.FC = () => {
-  const [liked, setLiked] = useState(false);
+  const [liked, setLiked] = useState<boolean>(false);
   return (
     <>
       <Flex>

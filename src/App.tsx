@@ -6,6 +6,9 @@ import { subRoutes } from './shared/Routes/subRoutes.ts';
 import Header from './modules/components/Header.tsx';
 import PostPage from './modules/pages/PostPage.tsx';
 import UserPage from './modules/pages/UserPage.tsx';
+import VerifyAccount from './modules/pages/VerifyAccount.tsx';
+import Login from './modules/components/Login.tsx';
+import SignUp from './modules/components/SignUp.tsx';
 
 const App: React.FC = () => {
   return (
@@ -14,6 +17,9 @@ const App: React.FC = () => {
       <Routes>
         <Route path={`/:${mainRoutes.UserProfile}`} element={<UserPage />} />
         <Route path={`/:${mainRoutes.UserProfile}/${subRoutes.post}/:${subRoutes.pid}`} element={<PostPage />} />
+        <Route path='/signup' element={<SignUp />} />
+        <Route path='/login' element={<Login />} />
+        <Route path='/verify-account' element={<VerifyAccount />} />
       </Routes>
     </Container>
   )

@@ -11,6 +11,8 @@ import { BrowserRouter } from 'react-router-dom'
 import { initReactI18next } from 'react-i18next';
 
 import en from './assets/translate/en.json';
+import { Provider } from 'react-redux';
+import store from './redux/store.ts';
 
 const styles: Styles = {
   global: (props) => ({
@@ -51,7 +53,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
       <ChakraProvider theme={theme}>
         <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-        <App />
+        <Provider store={store}>
+          <App />
+        </Provider>
       </ChakraProvider>
     </BrowserRouter>
   </React.StrictMode>,
