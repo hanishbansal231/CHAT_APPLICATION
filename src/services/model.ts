@@ -10,3 +10,7 @@ export interface SignUpInterface {
     email: string,
     password?: string,
 }
+
+export interface ProfileEndpoint {
+    UPDATE:string;
+}

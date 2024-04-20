@@ -12,7 +12,7 @@ router.get('/logout', logout)
 router.post('/change-password', authProtect, changePassword)
 router.get('/follow/:id', authProtect, followUnFollow)
 router.get('/profile/:id', getUserById)
-router.post('/user-update', authProtect, upload.single('profilePicture'), updateUser)
+router.put('/user-update', authProtect, upload.single('profilePicture'), updateUser)
 router.post('/forgot-password', forgotPasswordToken)
 router.post('/reset-password', resetPassword)
 

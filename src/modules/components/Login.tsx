@@ -21,6 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import { useToast } from '@chakra-ui/react'
 import { useDispatch } from 'react-redux';
 import { setIsLoading, setUser } from '../../redux/slice/authSlice';
+import { encrypt } from '../../utils/cryptoHelper';
 
 const Login: React.FC = () => {
 
@@ -49,6 +50,8 @@ const Login: React.FC = () => {
         dispatch(setIsLoading(false));
         if (response?.data?.success) {
             console.log(response);
+            localStorage.setItem('user', encrypt(response.data.data))
+            // console.log(JSON.parse(decrypt(localStorage.getItem('user') as string)))
             dispatch(setUser(response?.data?.data));
             navigate('/');
             toast({
@@ -112,11 +115,11 @@ const Login: React.FC = () => {
                                 Sign up
                             </Button>
                         </Stack>
-                            <Text align={"left"}>
-                                <Link href={'/forgot-password'} color={"blue.200"}>
-                                    Forgot Password
-                                </Link>
-                            </Text>
+                        <Text align={"left"}>
+                            <Link href={'/forgot-password'} color={"blue.200"}>
+                                Forgot Password
+                            </Link>
+                        </Text>
                         <Stack pt={6}>
                             <Text align={"center"}>
                                 Already a user?{" "}

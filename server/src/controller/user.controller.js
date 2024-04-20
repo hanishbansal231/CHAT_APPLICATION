@@ -274,7 +274,7 @@ const updateUser = asyncHandler(async (req, res, next) => {
         await user.save();
 
         return res.status(200).json(
-            new ApiResponse(200, user, 'Change Password Successfully...')
+            new ApiResponse(200, user, 'Profile Update Successfully...')
         )
 
 
@@ -293,7 +293,6 @@ const updateUser = asyncHandler(async (req, res, next) => {
 
 const getUserById = asyncHandler(async (req, res, next) => {
     try {
-
         const { id } = req.params;
 
         if (!id) return next(new ApiError(403, 'Id not found...'));

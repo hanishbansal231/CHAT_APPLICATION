@@ -11,6 +11,7 @@ import Login from './modules/components/Login.tsx';
 import SignUp from './modules/components/SignUp.tsx';
 import ProtectRoute from './modules/components/ProtectRoute.tsx';
 import ForgotPassword from './modules/pages/ForgotPassword.tsx';
+import UserProfilePage from './modules/pages/UserProfilePage.tsx';
 
 const App: React.FC = () => {
 
@@ -25,6 +26,7 @@ const App: React.FC = () => {
         <Route element={<ProtectRoute />} >
           <Route path={`/:${mainRoutes.UserProfile}`} element={<UserPage />} />
           <Route path={`/:${mainRoutes.UserProfile}/${subRoutes.post}/:${subRoutes.pid}`} element={<PostPage />} />
+          <Route path={`/update`} element={<UserProfilePage />} />
         </Route>
       </Routes>
     </Container>

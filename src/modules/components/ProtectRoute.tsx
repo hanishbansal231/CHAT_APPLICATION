@@ -5,7 +5,6 @@ import { Outlet, Navigate } from 'react-router-dom';
 
 const ProtectRoute:React.FC = () => {
     const { token } = useSelector((state: RootState) => state.auth);
-    console.log(token);
     return token
         ? (<Outlet />)
         : (<Navigate to="/login" />)
