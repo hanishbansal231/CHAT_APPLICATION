@@ -123,7 +123,7 @@ const Login: React.FC = () => {
                         <Stack pt={6}>
                             <Text align={"center"}>
                                 Already a user?{" "}
-                                <Link color={"blue.400"}>
+                                <Link href={'/signup'} color={"blue.400"}>
                                     SignUp
                                 </Link>
                             </Text>
