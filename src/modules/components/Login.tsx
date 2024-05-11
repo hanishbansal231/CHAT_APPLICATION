@@ -30,7 +30,7 @@ const Login: React.FC = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [loginData, setLoginData] = useState<any>({
-        email: '',
+        loginEmailOrUserName: '',
         password: '',
     })
 
@@ -78,8 +78,8 @@ const Login: React.FC = () => {
                         <FormControl isRequired>
                             <FormLabel>Email address or Username</FormLabel>
                             <Input
-                                type='email'
-                                name='email'
+                                type='text'
+                                name='loginEmailOrUserName'
                                 onChange={handelOnChange}
                             />
                         </FormControl>

@@ -10,6 +10,7 @@ const {
 
 export const sendOtp = async (data: SignUpInterface) => {
     try {
+        console.log(data);
         const response = await apiConnecter("POST", SENDOTP, data);
         if (!response.data.success) {
             throw new Error(response.data.message);

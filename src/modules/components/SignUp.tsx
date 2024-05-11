@@ -48,6 +48,7 @@ const SignUp: React.FC = () => {
 
     const signUpFormHandel = async (): Promise<void> => {
         dispatch(setIsLoading(true));
+        console.log(signUpData)
         const response = await sendOtp({ email: signUpData.email, username: signUpData.username });
         dispatch(setIsLoading(false));
         if (response?.data?.success) {

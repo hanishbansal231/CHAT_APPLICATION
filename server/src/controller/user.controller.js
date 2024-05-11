@@ -11,45 +11,58 @@ import sendEmail from '../helper/emailSender.js';
 config();
 
 
+
+const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+};
+
 /**
  * @param SEND OTP
  * OTP VERIFICATION FUNCTION
  */
 const sendOtp = asyncHandler(async (req, res, next) => {
-    const { email, username, name } = req.body;
+    const { email, username } = req.body;
 
-    if (!email || !name) return next(new ApiError(402, "Email is mendatory..."));
+    if (!(email || username)) {
+        return next(new ApiError(402, "Email is mandatory..."));
+    }
 
     const user = await User.findOne({
         $or: [{ email }, { username }]
     });
 
-    if (user) return next(new ApiError(402, "User Already Exist..."));
+    if (user) {
+        return next(new ApiError(402, "User Already Exists..."));
+    }
 
-    var otp = otpGenerator.generate(6, {
+    // Generate the initial OTP
+    let otp = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
         lowerCaseAlphabets: false,
         specialChars: false,
     });
 
-    const result = await Otp.findOne({ otp });
+    // Check if the generated OTP already exists
+    let result = await Otp.findOne({ otp });
 
+    // Loop until a unique OTP is found
     while (result) {
         otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             lowerCaseAlphabets: false,
             specialChars: false,
         });
+        result = await Otp.findOne({ otp }); // Add this line to check for uniqueness
     }
 
-    const otpPayload = { email, otp, name };
+    const otpPayload = { email, otp, username };
     const otpBody = await Otp.create(otpPayload);
 
     return res.status(200).json(
-        new ApiResponse(200, otpBody, 'Otp Send Successfully...')
-    )
-
-})
+        new ApiResponse(200, otpBody, 'OTP Sent Successfully...')
+    );
+});
 
 
 /**
@@ -113,14 +126,26 @@ const signup = asyncHandler(async (req, res, next) => {
 const login = asyncHandler(async (req, res, next) => {
     try {
 
-        const { username, email, password } = req.body;
+        const { loginEmailOrUserName, password } = req.body;
 
-        if (!password || !(username || email)) {
+        console.log(req.body);
+
+        if (!password || !loginEmailOrUserName) {
             return next(new ApiError(402, "All field Mendatory..."));
         }
 
-        const user = await User.findOne({ email }) || await User.findOne({ username });
+        console.log(req.body);
 
+
+        let user;
+        if (isValidEmail(loginEmailOrUserName)) {
+            user = await User.findOne({ email: loginEmailOrUserName });
+        } else {
+            console.log(loginEmailOrUserName)
+            user = await User.findOne({ username: loginEmailOrUserName });
+        }
+
+        console.log(user);
         if (!user) return next(new ApiError(402, "User is not find please signup.."));
 
         const isPassword = await user.comparePassword(password);
@@ -311,6 +336,31 @@ const getUserById = asyncHandler(async (req, res, next) => {
     }
 });
 
+
+/**
+ * @param getUser
+ * GET USER FUNCTION
+ * 
+ */
+
+const getUser = asyncHandler(async (req, res, next) => {
+    try {
+        const { id } = req.user;
+        if (!id) return next(new ApiError(403, 'Id not found...'));
+        const user = await User.findById(id);
+
+        if (!user) return next(new ApiError(402, "User is not find..."));
+
+        return res.status(200).json(
+            new ApiResponse(200, user, 'Change Password Successfully...')
+        )
+
+    } catch (error) {
+        console.log(error.message)
+        return next(new ApiError(402, "Internal Error", error));
+    }
+});
+
 const forgotPasswordToken = asyncHandler(async (req, res, next) => {
     try {
         const { email, username } = req.body;
@@ -357,16 +407,16 @@ const resetPassword = asyncHandler(async (req, res, next) => {
             .update(forgotToken)
             .digest('hex');
 
-            console.log(forgotPasswordToken)
+        console.log(forgotPasswordToken)
 
         const user = await User.findOne({
-            forgotPasswordToken:forgotToken,
+            forgotPasswordToken: forgotToken,
             forgotPasswordExpiry: { $gt: Date.now() }
         });
 
         if (!user) return next(new ApiError(402, "User is not find..."));
 
-        if(newPassword !== comfirmPassword) return next(new ApiError(403, 'password not match...'));
+        if (newPassword !== comfirmPassword) return next(new ApiError(403, 'password not match...'));
 
         user.password = newPassword;
         user.forgotPasswordExpiry = undefined;
@@ -392,5 +442,6 @@ export {
     updateUser,
     getUserById,
     forgotPasswordToken,
-    resetPassword
+    resetPassword,
+    getUser
 }
