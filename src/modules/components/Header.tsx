@@ -55,6 +55,8 @@ import {
     FiChevronDown,
 } from 'react-icons/fi';
 import { IconType } from 'react-icons';
+import { useSelector } from 'react-redux';
+import { RootState } from '@src/redux/store';
 
 interface LinkItemProps {
     name: string;
@@ -105,7 +107,7 @@ interface SidebarProps extends BoxProps {
     onClose: () => void;
 }
 
-const SidebarContent = ({ onClose, ...rest }: SidebarProps): React.FC => {
+const SidebarContent: React.FC<SidebarProps> = ({ onClose, ...rest }) => {
     return (
         <Box
             transition="3s ease"
@@ -118,7 +120,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps): React.FC => {
             {...rest}>
             <Flex h="20" alignItems="center" mx="8" justifyContent="space-between">
                 <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-                    Logo
+                    Chat Vibe
                 </Text>
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
@@ -171,6 +173,8 @@ interface MobileProps extends FlexProps {
 }
 const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
     const { colorMode, toggleColorMode } = useColorMode();
+    const { token, user } = useSelector((state: RootState) => state.auth);
+    console.log(user)
     return (
         <Flex
             ml={{ base: 0, md: 60 }}
@@ -222,7 +226,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                                 <Avatar
                                     size={'sm'}
                                     src={
-                                        'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
+                                        user.profile_picture.url ? user.profile_picture.url : 'https://images.unsplash.com/photo-1619946794135-5bc917a27793?ixlib=rb-0.3.5&q=80&fm=jpg&crop=faces&fit=crop&h=200&w=200&s=b616b2c5b373a80ffc9636ba24f7a4a9'
                                     }
                                 />
                                 <VStack
@@ -230,10 +234,10 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                                     alignItems="flex-start"
                                     spacing="1px"
                                     ml="2">
-                                    <Text fontSize="sm">Justina Clark</Text>
-                                    <Text fontSize="xs" color="gray.600">
+                                    <Text fontSize="sm">{user.name}</Text>
+                                    {/* <Text fontSize="xs" color="gray.600">
                                         Admin
-                                    </Text>
+                                    </Text> */}
                                 </VStack>
                                 <Box display={{ base: 'none', md: 'flex' }}>
                                     <FiChevronDown />
@@ -243,11 +247,39 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                         <MenuList
                             bg={useColorModeValue('white', 'gray.900')}
                             borderColor={useColorModeValue('gray.200', 'gray.700')}>
-                            <MenuItem>Profile</MenuItem>
-                            <MenuItem>Settings</MenuItem>
-                            <MenuItem>Billing</MenuItem>
-                            <MenuDivider />
-                            <MenuItem>Sign out</MenuItem>
+
+                            {
+                                token
+                                    ?
+                                    (
+                                        <>
+                                            <MenuItem>
+                                                <Link href={`/profile/${user.name}`}>
+                                                    Profile
+                                                </Link>
+                                            </MenuItem>
+                                            <MenuItem>Settings</MenuItem>
+                                            <MenuItem>Billing</MenuItem>
+                                            <MenuDivider />
+                                            <MenuItem>Sign out</MenuItem>
+                                        </>
+                                    )
+                                    :
+                                    (
+                                        <>
+                                            <MenuItem>
+                                                <Link href='/login'>
+                                                    Login
+                                                </Link>
+                                            </MenuItem>
+                                            <MenuItem>
+                                                <Link href='/signup'>
+                                                    Register
+                                                </Link>
+                                            </MenuItem>
+                                        </>
+                                    )
+                            }
                         </MenuList>
                     </Menu>
                 </Flex>

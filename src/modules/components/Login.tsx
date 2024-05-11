@@ -10,7 +10,6 @@ import {
     InputRightElement,
     Stack,
     Button,
-    Heading,
     Text,
     useColorModeValue,
     Link,
@@ -50,7 +49,7 @@ const Login: React.FC = () => {
         dispatch(setIsLoading(false));
         if (response?.data?.success) {
             console.log(response);
-            localStorage.setItem('user', encrypt(response.data.data))
+            localStorage.setItem('user', JSON.stringify(response.data.data))
             // console.log(JSON.parse(decrypt(localStorage.getItem('user') as string)))
             dispatch(setUser(response?.data?.data));
             navigate('/');
@@ -67,11 +66,11 @@ const Login: React.FC = () => {
         <Flex align={"center"} justify={"center"}>
             <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
                 <Stack align={"center"}>
-                    <Heading fontSize={"4xl"} textAlign={"center"}>
+                    {/* <Heading fontSize={"4xl"} textAlign={"center"}>
                         Login
-                    </Heading>
+                    </Heading> */}
                 </Stack>
-                <Box rounded={"lg"} bg={useColorModeValue("white", "gray.dark")} boxShadow={"lg"} p={8}>
+                <Box maxW={"600px"} rounded={"lg"} bg={useColorModeValue("white", "gray.dark")} boxShadow={"lg"} p={8}>
                     <Stack spacing={4}>
                         <HStack>
                         </HStack>

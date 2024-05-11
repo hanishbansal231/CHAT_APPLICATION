@@ -12,7 +12,7 @@ interface InitialState {
 
 const initialState: InitialState = {
     token: localStorage.getItem('token') ? JSON.parse(localStorage.getItem('token') as string) : null,
-    user: [],
+    user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user') as string) : null,
     isLoading: false,
     signData: {
         username: '',

@@ -99,7 +99,10 @@ const signup = asyncHandler(async (req, res, next) => {
             name,
             email,
             username,
-            password
+            password,
+            profile_picture: {
+                url: `https://api.dicebear.com/5.x/initials/svg?seed=${name}`
+            }
         });
 
         if (!newUser) {

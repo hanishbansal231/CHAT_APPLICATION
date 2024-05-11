@@ -14,10 +14,11 @@ import ForgotPassword from './modules/pages/ForgotPassword.tsx';
 import UserProfilePage from './modules/pages/UserProfilePage.tsx';
 import { useSelector } from 'react-redux';
 import { RootState } from './redux/store.ts';
+import Profile from './modules/pages/Profile.tsx';
 
 const App: React.FC = () => {
 
-  const { token } = useSelector((state: RootState) => state.auth);
+  const { token, user } = useSelector((state: RootState) => state.auth);
 
   return (
     <>
@@ -40,6 +41,7 @@ const App: React.FC = () => {
                     <Route path={`/:${mainRoutes.UserProfile}`} element={<UserPage />} />
                     <Route path={`/:${mainRoutes.UserProfile}/${subRoutes.post}/:${subRoutes.pid}`} element={<PostPage />} />
                     <Route path={`/update`} element={<UserProfilePage />} />
+                    <Route path={`/profile/:username`} element={<Profile />} />
                   </Route>
                 </>
               )
