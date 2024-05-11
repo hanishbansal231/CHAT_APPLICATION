@@ -18,7 +18,7 @@ import Profile from './modules/pages/Profile.tsx';
 
 const App: React.FC = () => {
 
-  const { token, user } = useSelector((state: RootState) => state.auth);
+  const { token } = useSelector((state: RootState) => state.auth);
 
   return (
     <>
