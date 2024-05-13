@@ -16,14 +16,24 @@ import { useSelector } from 'react-redux';
 import { RootState } from './redux/store.ts';
 import Profile from './modules/pages/Profile.tsx';
 
+interface Style {
+  width: string;
+  maxWidth:string;
+}
+
 const App: React.FC = () => {
 
   const { token } = useSelector((state: RootState) => state.auth);
+  const containerStyle: Style = {
+    width: 'calc(100% - 500px)',
+    maxWidth:"100%",
+  };
+
 
   return (
     <>
       <Header children={undefined} />
-      <Container maxW={"620px"}>
+      <Container style={containerStyle}>
         <Routes>
           {
             !token
